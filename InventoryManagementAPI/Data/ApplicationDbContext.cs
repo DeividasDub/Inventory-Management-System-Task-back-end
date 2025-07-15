@@ -12,6 +12,9 @@ namespace InventoryManagementAPI.Data
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<UserRoleMapping> UserRoleMappings { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<StockMovement> StockMovements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,6 +73,53 @@ namespace InventoryManagementAPI.Data
             modelBuilder.Entity<UserRoleMapping>().HasData(
                 new UserRoleMapping { UserId = 1, RoleId = 1 }
             );
+
+            modelBuilder.Entity<Supplier>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.ContactName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Phone).IsRequired();
+                entity.Property(e => e.Email).IsRequired();
+                entity.Property(e => e.Address).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.CreatedOn).IsRequired();
+            });
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.SKU).IsUnique();
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.SKU).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.QuantityInStock).IsRequired();
+                entity.Property(e => e.Price).IsRequired().HasColumnType("decimal(18,2)");
+                entity.Property(e => e.CreatedOn).IsRequired();
+                
+                entity.HasOne(p => p.Supplier)
+                    .WithMany(s => s.Products)
+                    .HasForeignKey(p => p.SupplierId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<StockMovement>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Type).IsRequired();
+                entity.Property(e => e.Quantity).IsRequired();
+                entity.Property(e => e.Reason).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Date).IsRequired();
+                
+                entity.HasOne(sm => sm.Product)
+                    .WithMany(p => p.StockMovements)
+                    .HasForeignKey(sm => sm.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                    
+                entity.HasOne(sm => sm.CreatedByUser)
+                    .WithMany()
+                    .HasForeignKey(sm => sm.CreatedByUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
     }
 }
