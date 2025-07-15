@@ -63,8 +63,7 @@ Content-Type: application/json
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 {
-  "name": "Manager",
-  "description": "Manager with elevated permissions"
+  "name": "Manager"
 }
 
 ### Get all roles (Admin only)
@@ -77,8 +76,7 @@ Content-Type: application/json
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 {
-  "name": "Supervisor",
-  "description": "Supervisor with team management permissions"
+  "name": "Supervisor"
 }
 
 ### Delete role (Admin only)

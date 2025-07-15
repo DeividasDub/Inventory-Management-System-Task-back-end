@@ -13,10 +13,7 @@ namespace InventoryManagementAPI.Models
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
         
-        [Required]
-        public int RoleId { get; set; }
-        
-        public Role Role { get; set; } = null!;
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

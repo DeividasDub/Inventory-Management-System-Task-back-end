@@ -23,9 +23,7 @@ namespace InventoryManagementAPI.Services
 
             var role = new Role
             {
-                Name = request.Name,
-                Description = request.Description,
-                CreatedAt = DateTime.UtcNow
+                Name = request.Name
             };
 
             _context.Roles.Add(role);
@@ -34,9 +32,7 @@ namespace InventoryManagementAPI.Services
             return new RoleResponseDto
             {
                 Id = role.Id,
-                Name = role.Name,
-                Description = role.Description,
-                CreatedAt = role.CreatedAt
+                Name = role.Name
             };
         }
 
@@ -55,15 +51,12 @@ namespace InventoryManagementAPI.Services
             }
 
             role.Name = request.Name;
-            role.Description = request.Description;
             await _context.SaveChangesAsync();
 
             return new RoleResponseDto
             {
                 Id = role.Id,
-                Name = role.Name,
-                Description = role.Description,
-                CreatedAt = role.CreatedAt
+                Name = role.Name
             };
         }
 
@@ -76,7 +69,7 @@ namespace InventoryManagementAPI.Services
                 return false;
             }
 
-            var hasUsers = await _context.Users.AnyAsync(u => u.RoleId == roleId);
+            var hasUsers = await _context.UserRoles.AnyAsync(ur => ur.RoleId == roleId);
             if (hasUsers)
             {
                 return false;
@@ -93,9 +86,7 @@ namespace InventoryManagementAPI.Services
                 .Select(r => new RoleResponseDto
                 {
                     Id = r.Id,
-                    Name = r.Name,
-                    Description = r.Description,
-                    CreatedAt = r.CreatedAt
+                    Name = r.Name
                 })
                 .ToListAsync();
 
