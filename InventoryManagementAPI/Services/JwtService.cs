@@ -34,9 +34,9 @@ namespace InventoryManagementAPI.Services
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
 
-            foreach (var userRole in user.UserRoles)
+            foreach (var userRoleMapping in user.UserRoleMappings)
             {
-                claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+                claims.Add(new Claim(ClaimTypes.Role, userRoleMapping.Role.Name));
             }
 
             var token = new JwtSecurityToken(

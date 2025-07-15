@@ -6,6 +6,8 @@ Content-Type: application/json
 
 {
   "email": "staff@example.com",
+  "firstName": "John",
+  "lastName": "Doe",
   "password": "Password123!"
 }
 
@@ -34,6 +36,8 @@ Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 {
   "email": "newuser@example.com",
+  "firstName": "Jane",
+  "lastName": "Smith",
   "password": "Password123!",
   "roleName": "Staff"
 }
@@ -71,7 +75,7 @@ GET {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/roles
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 ### Update role (Admin only)
-PUT {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/3
+PUT {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/Manager
 Content-Type: application/json
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
@@ -80,7 +84,7 @@ Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 }
 
 ### Delete role (Admin only)
-DELETE {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/3
+DELETE {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/Manager
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 ###

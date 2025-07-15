@@ -16,36 +16,35 @@ namespace InventoryManagementAPI.Services
 
         public async Task<RoleResponseDto?> CreateRoleAsync(CreateRoleRequestDto request)
         {
-            if (await _context.Roles.AnyAsync(r => r.Name == request.Name))
+            if (await _context.UserRoles.AnyAsync(r => r.Name == request.Name))
             {
                 return null;
             }
 
-            var role = new Role
+            var role = new UserRole
             {
                 Name = request.Name
             };
 
-            _context.Roles.Add(role);
+            _context.UserRoles.Add(role);
             await _context.SaveChangesAsync();
 
             return new RoleResponseDto
             {
-                Id = role.Id,
                 Name = role.Name
             };
         }
 
-        public async Task<RoleResponseDto?> UpdateRoleAsync(int roleId, UpdateRoleRequestDto request)
+        public async Task<RoleResponseDto?> UpdateRoleAsync(string roleName, UpdateRoleRequestDto request)
         {
-            var role = await _context.Roles.FindAsync(roleId);
+            var role = await _context.UserRoles.FindAsync(roleName);
             
             if (role == null)
             {
                 return null;
             }
 
-            if (await _context.Roles.AnyAsync(r => r.Name == request.Name && r.Id != roleId))
+            if (await _context.UserRoles.AnyAsync(r => r.Name == request.Name && r.Name != roleName))
             {
                 return null;
             }
@@ -55,37 +54,35 @@ namespace InventoryManagementAPI.Services
 
             return new RoleResponseDto
             {
-                Id = role.Id,
                 Name = role.Name
             };
         }
 
-        public async Task<bool> DeleteRoleAsync(int roleId)
+        public async Task<bool> DeleteRoleAsync(string roleName)
         {
-            var role = await _context.Roles.FindAsync(roleId);
+            var role = await _context.UserRoles.FindAsync(roleName);
             
             if (role == null)
             {
                 return false;
             }
 
-            var hasUsers = await _context.UserRoles.AnyAsync(ur => ur.RoleId == roleId);
+            var hasUsers = await _context.UserRoleMappings.AnyAsync(urm => urm.RoleName == roleName);
             if (hasUsers)
             {
                 return false;
             }
 
-            _context.Roles.Remove(role);
+            _context.UserRoles.Remove(role);
             await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<IEnumerable<RoleResponseDto>> GetAllRolesAsync()
         {
-            var roles = await _context.Roles
+            var roles = await _context.UserRoles
                 .Select(r => new RoleResponseDto
                 {
-                    Id = r.Id,
                     Name = r.Name
                 })
                 .ToListAsync();
@@ -93,9 +90,5 @@ namespace InventoryManagementAPI.Services
             return roles;
         }
 
-        public async Task<Role?> GetRoleByNameAsync(string roleName)
-        {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-        }
     }
 }

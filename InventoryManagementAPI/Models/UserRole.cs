@@ -4,12 +4,10 @@ namespace InventoryManagementAPI.Models
 {
     public class UserRole
     {
-        public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        [Required]
+        [MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
         
-        public int RoleId { get; set; }
-        public Role Role { get; set; } = null!;
-        
-        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+        public ICollection<UserRoleMapping> UserRoleMappings { get; set; } = new List<UserRoleMapping>();
     }
 }

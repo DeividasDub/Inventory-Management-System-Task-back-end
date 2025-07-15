@@ -22,7 +22,7 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == request.RoleName);
+            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Name == request.RoleName);
             if (role == null)
             {
                 return null;
@@ -31,36 +31,39 @@ namespace InventoryManagementAPI.Services
             var user = new User
             {
                 Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, 12),
-                CreatedAt = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var userRole = new UserRole
+            var userRoleMapping = new UserRoleMapping
             {
                 UserId = user.Id,
-                RoleId = role.Id,
-                AssignedAt = DateTime.UtcNow
+                RoleName = role.Name
             };
-            _context.UserRoles.Add(userRole);
+            _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();
 
             return new UserResponseDto
             {
                 Id = user.Id,
                 Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 RoleNames = new List<string> { role.Name },
-                CreatedAt = user.CreatedAt
+                CreatedOn = user.CreatedOn
             };
         }
 
         public async Task<UserResponseDto?> UpdateUserRoleAsync(int userId, string roleName)
         {
             var user = await _context.Users
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
+                .Include(u => u.UserRoleMappings)
+                .ThenInclude(urm => urm.Role)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             
             if (user == null)
@@ -68,43 +71,46 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Name == roleName);
             if (role == null)
             {
                 return null;
             }
 
-            _context.UserRoles.RemoveRange(user.UserRoles);
+            _context.UserRoleMappings.RemoveRange(user.UserRoleMappings);
             
-            var userRole = new UserRole
+            var userRoleMapping = new UserRoleMapping
             {
                 UserId = userId,
-                RoleId = role.Id,
-                AssignedAt = DateTime.UtcNow
+                RoleName = role.Name
             };
-            _context.UserRoles.Add(userRole);
+            _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();
 
             return new UserResponseDto
             {
                 Id = user.Id,
                 Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 RoleNames = new List<string> { role.Name },
-                CreatedAt = user.CreatedAt
+                CreatedOn = user.CreatedOn
             };
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
         {
             var users = await _context.Users
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
+                .Include(u => u.UserRoleMappings)
+                .ThenInclude(urm => urm.Role)
                 .Select(u => new UserResponseDto
                 {
                     Id = u.Id,
                     Email = u.Email,
-                    RoleNames = u.UserRoles.Select(ur => ur.Role.Name).ToList(),
-                    CreatedAt = u.CreatedAt
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    RoleNames = u.UserRoleMappings.Select(urm => urm.Role.Name).ToList(),
+                    CreatedOn = u.CreatedOn
                 })
                 .ToListAsync();
 
