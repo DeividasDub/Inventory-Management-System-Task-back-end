@@ -21,6 +21,6 @@ namespace InventoryManagementAPI.DTOs
         public string Password { get; set; } = string.Empty;
         
         [Required]
-        public string RoleName { get; set; } = string.Empty;
+        public int RoleId { get; set; }
     }
 }

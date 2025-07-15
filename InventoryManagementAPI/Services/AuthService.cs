@@ -41,7 +41,7 @@ namespace InventoryManagementAPI.Services
             var userRoleMapping = new UserRoleMapping
             {
                 UserId = user.Id,
-                RoleName = "Staff"
+                RoleId = 2
             };
             _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();

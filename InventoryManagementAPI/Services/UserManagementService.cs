@@ -22,7 +22,7 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Name == request.RoleName);
+            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Id == request.RoleId);
             if (role == null)
             {
                 return null;
@@ -43,7 +43,7 @@ namespace InventoryManagementAPI.Services
             var userRoleMapping = new UserRoleMapping
             {
                 UserId = user.Id,
-                RoleName = role.Name
+                RoleId = role.Id
             };
             _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();
@@ -59,7 +59,7 @@ namespace InventoryManagementAPI.Services
             };
         }
 
-        public async Task<UserResponseDto?> UpdateUserRoleAsync(int userId, string roleName)
+        public async Task<UserResponseDto?> UpdateUserRoleAsync(int userId, int roleId)
         {
             var user = await _context.Users
                 .Include(u => u.UserRoleMappings)
@@ -71,7 +71,7 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Name == roleName);
+            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Id == roleId);
             if (role == null)
             {
                 return null;
@@ -82,7 +82,7 @@ namespace InventoryManagementAPI.Services
             var userRoleMapping = new UserRoleMapping
             {
                 UserId = userId,
-                RoleName = role.Name
+                RoleId = role.Id
             };
             _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();

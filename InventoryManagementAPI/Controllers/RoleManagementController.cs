@@ -35,15 +35,15 @@ namespace InventoryManagementAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{roleName}")]
-        public async Task<IActionResult> UpdateRole(string roleName, [FromBody] UpdateRoleRequestDto request)
+        [HttpPut("{roleId}")]
+        public async Task<IActionResult> UpdateRole(int roleId, [FromBody] UpdateRoleRequestDto request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var result = await _roleManagementService.UpdateRoleAsync(roleName, request);
+            var result = await _roleManagementService.UpdateRoleAsync(roleId, request);
             
             if (result == null)
             {
@@ -53,10 +53,10 @@ namespace InventoryManagementAPI.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{roleName}")]
-        public async Task<IActionResult> DeleteRole(string roleName)
+        [HttpDelete("{roleId}")]
+        public async Task<IActionResult> DeleteRole(int roleId)
         {
-            var result = await _roleManagementService.DeleteRoleAsync(roleName);
+            var result = await _roleManagementService.DeleteRoleAsync(roleId);
             
             if (!result)
             {

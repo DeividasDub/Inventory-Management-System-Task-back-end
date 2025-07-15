@@ -46,7 +46,7 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _userManagementService.UpdateUserRoleAsync(userId, request.RoleName);
+            var result = await _userManagementService.UpdateUserRoleAsync(userId, request.RoleId);
             
             if (result == null)
             {

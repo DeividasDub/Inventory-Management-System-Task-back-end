@@ -5,6 +5,6 @@ namespace InventoryManagementAPI.DTOs
     public class UpdateUserRoleRequestDto
     {
         [Required]
-        public string RoleName { get; set; } = string.Empty;
+        public int RoleId { get; set; }
     }
 }

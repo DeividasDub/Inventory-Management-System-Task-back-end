@@ -31,20 +31,21 @@ namespace InventoryManagementAPI.Services
 
             return new RoleResponseDto
             {
+                Id = role.Id,
                 Name = role.Name
             };
         }
 
-        public async Task<RoleResponseDto?> UpdateRoleAsync(string roleName, UpdateRoleRequestDto request)
+        public async Task<RoleResponseDto?> UpdateRoleAsync(int roleId, UpdateRoleRequestDto request)
         {
-            var role = await _context.UserRoles.FindAsync(roleName);
+            var role = await _context.UserRoles.FindAsync(roleId);
             
             if (role == null)
             {
                 return null;
             }
 
-            if (await _context.UserRoles.AnyAsync(r => r.Name == request.Name && r.Name != roleName))
+            if (await _context.UserRoles.AnyAsync(r => r.Name == request.Name && r.Id != roleId))
             {
                 return null;
             }
@@ -54,20 +55,21 @@ namespace InventoryManagementAPI.Services
 
             return new RoleResponseDto
             {
+                Id = role.Id,
                 Name = role.Name
             };
         }
 
-        public async Task<bool> DeleteRoleAsync(string roleName)
+        public async Task<bool> DeleteRoleAsync(int roleId)
         {
-            var role = await _context.UserRoles.FindAsync(roleName);
+            var role = await _context.UserRoles.FindAsync(roleId);
             
             if (role == null)
             {
                 return false;
             }
 
-            var hasUsers = await _context.UserRoleMappings.AnyAsync(urm => urm.RoleName == roleName);
+            var hasUsers = await _context.UserRoleMappings.AnyAsync(urm => urm.RoleId == roleId);
             if (hasUsers)
             {
                 return false;
@@ -83,6 +85,7 @@ namespace InventoryManagementAPI.Services
             var roles = await _context.UserRoles
                 .Select(r => new RoleResponseDto
                 {
+                    Id = r.Id,
                     Name = r.Name
                 })
                 .ToListAsync();

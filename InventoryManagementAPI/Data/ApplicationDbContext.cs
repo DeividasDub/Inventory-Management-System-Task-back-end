@@ -19,7 +19,8 @@ namespace InventoryManagementAPI.Data
 
             modelBuilder.Entity<UserRole>(entity =>
             {
-                entity.HasKey(e => e.Name);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Name).IsUnique();
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(50);
             });
 
@@ -36,7 +37,7 @@ namespace InventoryManagementAPI.Data
 
             modelBuilder.Entity<UserRoleMapping>(entity =>
             {
-                entity.HasKey(urm => new { urm.UserId, urm.RoleName });
+                entity.HasKey(urm => new { urm.UserId, urm.RoleId });
                 
                 entity.HasOne(urm => urm.User)
                     .WithMany(u => u.UserRoleMappings)
@@ -45,13 +46,13 @@ namespace InventoryManagementAPI.Data
                     
                 entity.HasOne(urm => urm.Role)
                     .WithMany(r => r.UserRoleMappings)
-                    .HasForeignKey(urm => urm.RoleName)
+                    .HasForeignKey(urm => urm.RoleId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<UserRole>().HasData(
-                new UserRole { Name = "Admin" },
-                new UserRole { Name = "Staff" }
+                new UserRole { Id = 1, Name = "Admin" },
+                new UserRole { Id = 2, Name = "Staff" }
             );
 
             modelBuilder.Entity<User>().HasData(
@@ -67,7 +68,7 @@ namespace InventoryManagementAPI.Data
             );
 
             modelBuilder.Entity<UserRoleMapping>().HasData(
-                new UserRoleMapping { UserId = 1, RoleName = "Admin" }
+                new UserRoleMapping { UserId = 1, RoleId = 1 }
             );
         }
     }

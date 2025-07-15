@@ -5,7 +5,7 @@ namespace InventoryManagementAPI.Models
         public int UserId { get; set; }
         public User User { get; set; } = null!;
         
-        public string RoleName { get; set; } = string.Empty;
+        public int RoleId { get; set; }
         public UserRole Role { get; set; } = null!;
     }
 }

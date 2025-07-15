@@ -39,7 +39,7 @@ Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
   "firstName": "Jane",
   "lastName": "Smith",
   "password": "Password123!",
-  "roleName": "Staff"
+  "roleId": 2
 }
 
 ### Get all users (Admin only)
@@ -52,7 +52,7 @@ Content-Type: application/json
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 {
-  "roleName": "Admin"
+  "roleId": 1
 }
 
 ### Delete user (Admin only)
@@ -75,7 +75,7 @@ GET {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/roles
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 ### Update role (Admin only)
-PUT {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/Manager
+PUT {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/3
 Content-Type: application/json
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
@@ -84,7 +84,7 @@ Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 }
 
 ### Delete role (Admin only)
-DELETE {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/Manager
+DELETE {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/3
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 ###
