@@ -22,11 +22,17 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == request.RoleName);
+            if (role == null)
+            {
+                return null;
+            }
+
             var user = new User
             {
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, 12),
-                Role = request.Role,
+                RoleId = role.Id,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -37,12 +43,12 @@ namespace InventoryManagementAPI.Services
             {
                 Id = user.Id,
                 Email = user.Email,
-                Role = user.Role,
+                RoleName = role.Name,
                 CreatedAt = user.CreatedAt
             };
         }
 
-        public async Task<UserResponseDto?> UpdateUserRoleAsync(int userId, UserRole newRole)
+        public async Task<UserResponseDto?> UpdateUserRoleAsync(int userId, string roleName)
         {
             var user = await _context.Users.FindAsync(userId);
             
@@ -51,14 +57,20 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            user.Role = newRole;
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+            if (role == null)
+            {
+                return null;
+            }
+
+            user.RoleId = role.Id;
             await _context.SaveChangesAsync();
 
             return new UserResponseDto
             {
                 Id = user.Id,
                 Email = user.Email,
-                Role = user.Role,
+                RoleName = role.Name,
                 CreatedAt = user.CreatedAt
             };
         }
@@ -66,11 +78,12 @@ namespace InventoryManagementAPI.Services
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
         {
             var users = await _context.Users
+                .Include(u => u.Role)
                 .Select(u => new UserResponseDto
                 {
                     Id = u.Id,
                     Email = u.Email,
-                    Role = u.Role,
+                    RoleName = u.Role.Name,
                     CreatedAt = u.CreatedAt
                 })
                 .ToListAsync();

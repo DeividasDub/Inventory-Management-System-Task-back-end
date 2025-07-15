@@ -35,7 +35,7 @@ Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 {
   "email": "newuser@example.com",
   "password": "Password123!",
-  "role": 1
+  "roleName": "Staff"
 }
 
 ### Get all users (Admin only)
@@ -48,11 +48,41 @@ Content-Type: application/json
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 {
-  "role": 0
+  "roleName": "Admin"
 }
 
 ### Delete user (Admin only)
 DELETE {{InventoryManagementAPI_HostAddress}}/api/usermanagement/1
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+### === ROLE MANAGEMENT ENDPOINTS (Admin only) ===
+
+### Create a new role (Admin only)
+POST {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/create-role
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+{
+  "name": "Manager",
+  "description": "Manager with elevated permissions"
+}
+
+### Get all roles (Admin only)
+GET {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/roles
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+### Update role (Admin only)
+PUT {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/3
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+{
+  "name": "Supervisor",
+  "description": "Supervisor with team management permissions"
+}
+
+### Delete role (Admin only)
+DELETE {{InventoryManagementAPI_HostAddress}}/api/rolemanagement/3
 Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 ###
