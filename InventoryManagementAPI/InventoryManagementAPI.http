@@ -1,6 +1,58 @@
 @InventoryManagementAPI_HostAddress = http://localhost:5065
 
-GET {{InventoryManagementAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+### Register a new user (defaults to Staff role)
+POST {{InventoryManagementAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "staff@example.com",
+  "password": "Password123!"
+}
+
+### Login as Admin (seeded user)
+POST {{InventoryManagementAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@inventory.com",
+  "password": "Admin123!"
+}
+
+### Login as Staff user
+POST {{InventoryManagementAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "staff@example.com",
+  "password": "Password123!"
+}
+
+### Create a new user (Admin only)
+POST {{InventoryManagementAPI_HostAddress}}/api/usermanagement/create-user
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+{
+  "email": "newuser@example.com",
+  "password": "Password123!",
+  "role": 1
+}
+
+### Get all users (Admin only)
+GET {{InventoryManagementAPI_HostAddress}}/api/usermanagement/users
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+### Update user role (Admin only)
+PUT {{InventoryManagementAPI_HostAddress}}/api/usermanagement/1/role
+Content-Type: application/json
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
+
+{
+  "role": 0
+}
+
+### Delete user (Admin only)
+DELETE {{InventoryManagementAPI_HostAddress}}/api/usermanagement/1
+Authorization: Bearer YOUR_ADMIN_JWT_TOKEN_HERE
 
 ###

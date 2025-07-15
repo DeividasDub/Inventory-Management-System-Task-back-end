@@ -30,7 +30,7 @@ namespace InventoryManagementAPI.Services
             {
                 Email = request.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, 12),
-                Role = request.Role,
+                Role = UserRole.Staff,
                 CreatedAt = DateTime.UtcNow
             };
 

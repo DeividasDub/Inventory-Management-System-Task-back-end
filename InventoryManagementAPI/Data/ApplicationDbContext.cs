@@ -24,6 +24,17 @@ namespace InventoryManagementAPI.Data
                 entity.Property(e => e.Role).IsRequired();
                 entity.Property(e => e.CreatedAt).IsRequired();
             });
+
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Email = "admin@inventory.com",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!", 12),
+                    Role = UserRole.Admin,
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
         }
     }
 }
