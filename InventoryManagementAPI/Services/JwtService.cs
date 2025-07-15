@@ -26,14 +26,18 @@ namespace InventoryManagementAPI.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
             };
+
+            foreach (var userRoleMapping in user.UserRoleMappings)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRoleMapping.Role.Name));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: issuer,

@@ -29,15 +29,29 @@ namespace InventoryManagementAPI.Services
             var user = new User
             {
                 Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password, 12),
-                Role = request.Role,
-                CreatedAt = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var token = _jwtService.GenerateToken(user);
+            var userRoleMapping = new UserRoleMapping
+            {
+                UserId = user.Id,
+                RoleId = 2
+            };
+            _context.UserRoleMappings.Add(userRoleMapping);
+            await _context.SaveChangesAsync();
+
+            var userWithRoles = await _context.Users
+                .Include(u => u.UserRoleMappings)
+                .ThenInclude(urm => urm.Role)
+                .FirstAsync(u => u.Id == user.Id);
+
+            var token = _jwtService.GenerateToken(userWithRoles);
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var expirationHours = int.Parse(jwtSettings["ExpirationHours"] ?? "24");
 
@@ -45,14 +59,17 @@ namespace InventoryManagementAPI.Services
             {
                 Token = token,
                 Email = user.Email,
-                Role = user.Role,
+                Roles = userWithRoles.UserRoleMappings.Select(urm => urm.Role.Name).ToList(),
                 ExpiresAt = DateTime.UtcNow.AddHours(expirationHours)
             };
         }
 
         public async Task<AuthResponseDto?> LoginAsync(LoginRequestDto request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var user = await _context.Users
+                .Include(u => u.UserRoleMappings)
+                .ThenInclude(urm => urm.Role)
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
             
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
@@ -67,7 +84,7 @@ namespace InventoryManagementAPI.Services
             {
                 Token = token,
                 Email = user.Email,
-                Role = user.Role,
+                Roles = user.UserRoleMappings.Select(urm => urm.Role.Name).ToList(),
                 ExpiresAt = DateTime.UtcNow.AddHours(expirationHours)
             };
         }
