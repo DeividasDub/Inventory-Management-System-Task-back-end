@@ -3,6 +3,7 @@ using BCrypt.Net;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Auth;
 using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
@@ -11,12 +12,14 @@ namespace InventoryManagementAPI.Services
         private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _configuration;
+        private readonly IAuthResponseFactory _authResponseFactory;
 
-        public AuthService(ApplicationDbContext context, IJwtService jwtService, IConfiguration configuration)
+        public AuthService(ApplicationDbContext context, IJwtService jwtService, IConfiguration configuration, IAuthResponseFactory authResponseFactory)
         {
             _context = context;
             _jwtService = jwtService;
             _configuration = configuration;
+            _authResponseFactory = authResponseFactory;
         }
 
         public async Task<AuthResponseDto?> RegisterAsync(RegisterRequestDto request)
@@ -55,13 +58,7 @@ namespace InventoryManagementAPI.Services
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var expirationHours = int.Parse(jwtSettings["ExpirationHours"] ?? "24");
 
-            return new AuthResponseDto
-            {
-                Token = token,
-                Email = user.Email,
-                Roles = userWithRoles.UserRoleMappings.Select(urm => urm.Role.Name).ToList(),
-                ExpiresAt = DateTime.UtcNow.AddHours(expirationHours)
-            };
+            return _authResponseFactory.CreateAuthResponse(userWithRoles, token, DateTime.UtcNow.AddHours(expirationHours));
         }
 
         public async Task<AuthResponseDto?> LoginAsync(LoginRequestDto request)
@@ -80,13 +77,7 @@ namespace InventoryManagementAPI.Services
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var expirationHours = int.Parse(jwtSettings["ExpirationHours"] ?? "24");
 
-            return new AuthResponseDto
-            {
-                Token = token,
-                Email = user.Email,
-                Roles = user.UserRoleMappings.Select(urm => urm.Role.Name).ToList(),
-                ExpiresAt = DateTime.UtcNow.AddHours(expirationHours)
-            };
+            return _authResponseFactory.CreateAuthResponse(user, token, DateTime.UtcNow.AddHours(expirationHours));
         }
     }
 }

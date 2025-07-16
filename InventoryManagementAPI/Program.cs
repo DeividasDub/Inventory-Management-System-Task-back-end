@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.Services;
+using InventoryManagementAPI.Factories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,13 @@ builder.Services.AddScoped<IRoleManagementService, RoleManagementService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IStockMovementService, StockMovementService>();
+
+builder.Services.AddScoped<IAuthResponseFactory, AuthResponseFactory>();
+builder.Services.AddScoped<IUserResponseFactory, UserResponseFactory>();
+builder.Services.AddScoped<IRoleResponseFactory, RoleResponseFactory>();
+builder.Services.AddScoped<IProductResponseFactory, ProductResponseFactory>();
+builder.Services.AddScoped<ISupplierResponseFactory, SupplierResponseFactory>();
+builder.Services.AddScoped<IStockMovementResponseFactory, StockMovementResponseFactory>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

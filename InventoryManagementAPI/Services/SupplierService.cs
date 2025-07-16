@@ -2,16 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Supplier;
 using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class SupplierService : ISupplierService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ISupplierResponseFactory _supplierResponseFactory;
 
-        public SupplierService(ApplicationDbContext context)
+        public SupplierService(ApplicationDbContext context, ISupplierResponseFactory supplierResponseFactory)
         {
             _context = context;
+            _supplierResponseFactory = supplierResponseFactory;
         }
 
         public async Task<SupplierResponseDto?> CreateSupplierAsync(CreateSupplierRequestDto request)
@@ -34,16 +37,7 @@ namespace InventoryManagementAPI.Services
             _context.Suppliers.Add(supplier);
             await _context.SaveChangesAsync();
 
-            return new SupplierResponseDto
-            {
-                Id = supplier.Id,
-                Name = supplier.Name,
-                ContactName = supplier.ContactName,
-                Phone = supplier.Phone,
-                Email = supplier.Email,
-                Address = supplier.Address,
-                CreatedOn = supplier.CreatedOn
-            };
+            return _supplierResponseFactory.CreateSupplierResponse(supplier);
         }
 
         public async Task<SupplierResponseDto?> UpdateSupplierAsync(int id, UpdateSupplierRequestDto request)
@@ -67,16 +61,7 @@ namespace InventoryManagementAPI.Services
 
             await _context.SaveChangesAsync();
 
-            return new SupplierResponseDto
-            {
-                Id = supplier.Id,
-                Name = supplier.Name,
-                ContactName = supplier.ContactName,
-                Phone = supplier.Phone,
-                Email = supplier.Email,
-                Address = supplier.Address,
-                CreatedOn = supplier.CreatedOn
-            };
+            return _supplierResponseFactory.CreateSupplierResponse(supplier);
         }
 
         public async Task<bool> DeleteSupplierAsync(int id)
@@ -106,34 +91,14 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            return new SupplierResponseDto
-            {
-                Id = supplier.Id,
-                Name = supplier.Name,
-                ContactName = supplier.ContactName,
-                Phone = supplier.Phone,
-                Email = supplier.Email,
-                Address = supplier.Address,
-                CreatedOn = supplier.CreatedOn
-            };
+            return _supplierResponseFactory.CreateSupplierResponse(supplier);
         }
 
         public async Task<IEnumerable<SupplierResponseDto>> GetAllSuppliersAsync()
         {
-            var suppliers = await _context.Suppliers
-                .Select(s => new SupplierResponseDto
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    ContactName = s.ContactName,
-                    Phone = s.Phone,
-                    Email = s.Email,
-                    Address = s.Address,
-                    CreatedOn = s.CreatedOn
-                })
-                .ToListAsync();
+            var suppliers = await _context.Suppliers.ToListAsync();
 
-            return suppliers;
+            return _supplierResponseFactory.CreateSupplierResponses(suppliers);
         }
     }
 }

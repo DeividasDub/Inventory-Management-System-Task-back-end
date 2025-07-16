@@ -2,16 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Role;
 using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class RoleManagementService : IRoleManagementService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IRoleResponseFactory _roleResponseFactory;
 
-        public RoleManagementService(ApplicationDbContext context)
+        public RoleManagementService(ApplicationDbContext context, IRoleResponseFactory roleResponseFactory)
         {
             _context = context;
+            _roleResponseFactory = roleResponseFactory;
         }
 
         public async Task<RoleResponseDto?> CreateRoleAsync(CreateRoleRequestDto request)
@@ -29,11 +32,7 @@ namespace InventoryManagementAPI.Services
             _context.UserRoles.Add(role);
             await _context.SaveChangesAsync();
 
-            return new RoleResponseDto
-            {
-                Id = role.Id,
-                Name = role.Name
-            };
+            return _roleResponseFactory.CreateRoleResponse(role);
         }
 
         public async Task<RoleResponseDto?> UpdateRoleAsync(int roleId, UpdateRoleRequestDto request)
@@ -53,11 +52,7 @@ namespace InventoryManagementAPI.Services
             role.Name = request.Name;
             await _context.SaveChangesAsync();
 
-            return new RoleResponseDto
-            {
-                Id = role.Id,
-                Name = role.Name
-            };
+            return _roleResponseFactory.CreateRoleResponse(role);
         }
 
         public async Task<bool> DeleteRoleAsync(int roleId)
@@ -82,15 +77,9 @@ namespace InventoryManagementAPI.Services
 
         public async Task<IEnumerable<RoleResponseDto>> GetAllRolesAsync()
         {
-            var roles = await _context.UserRoles
-                .Select(r => new RoleResponseDto
-                {
-                    Id = r.Id,
-                    Name = r.Name
-                })
-                .ToListAsync();
+            var roles = await _context.UserRoles.ToListAsync();
 
-            return roles;
+            return _roleResponseFactory.CreateRoleResponses(roles);
         }
 
     }

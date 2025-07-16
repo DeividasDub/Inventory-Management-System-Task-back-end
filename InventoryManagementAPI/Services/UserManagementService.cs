@@ -3,16 +3,19 @@ using BCrypt.Net;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.User;
 using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class UserManagementService : IUserManagementService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IUserResponseFactory _userResponseFactory;
 
-        public UserManagementService(ApplicationDbContext context)
+        public UserManagementService(ApplicationDbContext context, IUserResponseFactory userResponseFactory)
         {
             _context = context;
+            _userResponseFactory = userResponseFactory;
         }
 
         public async Task<UserResponseDto?> CreateUserAsync(CreateUserRequestDto request)
@@ -48,15 +51,7 @@ namespace InventoryManagementAPI.Services
             _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();
 
-            return new UserResponseDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                RoleNames = new List<string> { role.Name },
-                CreatedOn = user.CreatedOn
-            };
+            return _userResponseFactory.CreateUserResponse(user, role.Name);
         }
 
         public async Task<UserResponseDto?> UpdateUserRoleAsync(int userId, int roleId)
@@ -87,15 +82,7 @@ namespace InventoryManagementAPI.Services
             _context.UserRoleMappings.Add(userRoleMapping);
             await _context.SaveChangesAsync();
 
-            return new UserResponseDto
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                RoleNames = new List<string> { role.Name },
-                CreatedOn = user.CreatedOn
-            };
+            return _userResponseFactory.CreateUserResponse(user, role.Name);
         }
 
         public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync()
@@ -103,18 +90,9 @@ namespace InventoryManagementAPI.Services
             var users = await _context.Users
                 .Include(u => u.UserRoleMappings)
                 .ThenInclude(urm => urm.Role)
-                .Select(u => new UserResponseDto
-                {
-                    Id = u.Id,
-                    Email = u.Email,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    RoleNames = u.UserRoleMappings.Select(urm => urm.Role.Name).ToList(),
-                    CreatedOn = u.CreatedOn
-                })
                 .ToListAsync();
 
-            return users;
+            return _userResponseFactory.CreateUserResponses(users);
         }
 
         public async Task<bool> DeleteUserAsync(int userId)
