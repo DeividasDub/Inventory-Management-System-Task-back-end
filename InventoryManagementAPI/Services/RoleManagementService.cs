@@ -23,9 +23,7 @@ namespace InventoryManagementAPI.Services
 
             var role = new UserRole
             {
-                Name = request.Name,
-                Description = request.Description,
-                CreatedOn = DateTime.UtcNow
+                Name = request.Name
             };
 
             _context.UserRoles.Add(role);
@@ -49,7 +47,6 @@ namespace InventoryManagementAPI.Services
             }
 
             role.Name = request.Name;
-            role.Description = request.Description;
 
             await _context.SaveChangesAsync();
 

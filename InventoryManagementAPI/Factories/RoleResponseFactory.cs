@@ -10,9 +10,7 @@ namespace InventoryManagementAPI.Factories
             return new RoleResponseDto
             {
                 Id = role.Id,
-                Name = role.Name,
-                Description = role.Description,
-                CreatedOn = role.CreatedOn
+                Name = role.Name
             };
         }
 
