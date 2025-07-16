@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
-using InventoryManagementAPI.DTOs;
+using InventoryManagementAPI.DTOs.Role;
 using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Services

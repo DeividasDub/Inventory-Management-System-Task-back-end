@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using InventoryManagementAPI.DTOs;
+using InventoryManagementAPI.DTOs.Auth;
 using InventoryManagementAPI.Services;
 
 namespace InventoryManagementAPI.Controllers

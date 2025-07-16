@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using InventoryManagementAPI.DTOs;
+using InventoryManagementAPI.DTOs.StockMovement;
 using InventoryManagementAPI.Services;
 using System.Security.Claims;
 
