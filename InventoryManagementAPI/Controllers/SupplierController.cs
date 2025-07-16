@@ -2,22 +2,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using InventoryManagementAPI.DTOs.Supplier;
 using InventoryManagementAPI.Services;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class SupplierController : ControllerBase
     {
         private readonly ISupplierService _supplierService;
+        private readonly ISupplierModelFactory _supplierModelFactory;
 
-        public SupplierController(ISupplierService supplierService)
+        public SupplierController(ISupplierService supplierService, ISupplierModelFactory supplierModelFactory)
         {
             _supplierService = supplierService;
+            _supplierModelFactory = supplierModelFactory;
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateSupplier([FromBody] CreateSupplierRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -25,17 +29,20 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _supplierService.CreateSupplierAsync(request);
+            var supplier = await _supplierService.CreateSupplierAsync(request);
             
-            if (result == null)
+            if (supplier == null)
             {
-                return BadRequest(new { message = "Email already exists" });
+                return BadRequest(new { message = "Supplier with this email already exists" });
             }
 
-            return Ok(result);
+            var model = _supplierModelFactory.PrepareSupplierResponseModel(supplier);
+
+            return Ok(model);
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateSupplier(int id, [FromBody] UpdateSupplierRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -43,17 +50,20 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _supplierService.UpdateSupplierAsync(id, request);
+            var supplier = await _supplierService.UpdateSupplierAsync(id, request);
             
-            if (result == null)
+            if (supplier == null)
             {
                 return NotFound(new { message = "Supplier not found or email already exists" });
             }
 
-            return Ok(result);
+            var model = _supplierModelFactory.PrepareSupplierResponseModel(supplier);
+
+            return Ok(model);
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteSupplier(int id)
         {
             var result = await _supplierService.DeleteSupplierAsync(id);
@@ -67,23 +77,28 @@ namespace InventoryManagementAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetSupplier(int id)
         {
-            var result = await _supplierService.GetSupplierByIdAsync(id);
+            var supplier = await _supplierService.GetSupplierByIdAsync(id);
             
-            if (result == null)
+            if (supplier == null)
             {
                 return NotFound(new { message = "Supplier not found" });
             }
 
-            return Ok(result);
+            var model = _supplierModelFactory.PrepareSupplierResponseModel(supplier);
+
+            return Ok(model);
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetAllSuppliers()
         {
             var suppliers = await _supplierService.GetAllSuppliersAsync();
-            return Ok(suppliers);
+            var model = _supplierModelFactory.PrepareSupplierListResponseModel(suppliers);
+            return Ok(model);
         }
     }
 }

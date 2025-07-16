@@ -2,24 +2,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using InventoryManagementAPI.DTOs.User;
 using InventoryManagementAPI.Services;
-using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class UserManagementController : ControllerBase
     {
         private readonly IUserManagementService _userManagementService;
+        private readonly IUserModelFactory _userModelFactory;
 
-        public UserManagementController(IUserManagementService userManagementService)
+        public UserManagementController(IUserManagementService userManagementService, IUserModelFactory userModelFactory)
         {
             _userManagementService = userManagementService;
+            _userModelFactory = userModelFactory;
         }
 
-        [HttpPost("create-user")]
-        [Authorize(Roles = "Admin")]
+        [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -27,18 +28,19 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _userManagementService.CreateUserAsync(request);
+            var user = await _userManagementService.CreateUserAsync(request);
             
-            if (result == null)
+            if (user == null)
             {
-                return BadRequest(new { message = "Email already exists" });
+                return BadRequest(new { message = "User with this email already exists or role not found" });
             }
 
-            return Ok(result);
+            var model = _userModelFactory.PrepareUserResponseModel(user);
+
+            return Ok(model);
         }
 
         [HttpPut("{userId}/role")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserRole(int userId, [FromBody] UpdateUserRoleRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -46,26 +48,27 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _userManagementService.UpdateUserRoleAsync(userId, request.RoleId);
+            var user = await _userManagementService.UpdateUserRoleAsync(userId, request.RoleId);
             
-            if (result == null)
+            if (user == null)
             {
-                return NotFound(new { message = "User not found" });
+                return NotFound(new { message = "User or role not found" });
             }
 
-            return Ok(result);
+            var model = _userModelFactory.PrepareUserResponseModel(user);
+
+            return Ok(model);
         }
 
-        [HttpGet("users")]
-        [Authorize(Roles = "Admin")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManagementService.GetAllUsersAsync();
-            return Ok(users);
+            var model = _userModelFactory.PrepareUserListResponseModel(users);
+            return Ok(model);
         }
 
         [HttpDelete("{userId}")]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
             var result = await _userManagementService.DeleteUserAsync(userId);

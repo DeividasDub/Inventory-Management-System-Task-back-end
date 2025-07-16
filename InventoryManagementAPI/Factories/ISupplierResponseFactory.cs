@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public interface ISupplierResponseFactory
+    public interface ISupplierModelFactory
     {
-        SupplierResponseDto CreateSupplierResponse(Supplier supplier);
-        IEnumerable<SupplierResponseDto> CreateSupplierResponses(IEnumerable<Supplier> suppliers);
+        SupplierResponseDto PrepareSupplierResponseModel(Supplier supplier);
+        IEnumerable<SupplierResponseDto> PrepareSupplierListResponseModel(IEnumerable<Supplier> suppliers);
     }
 }

@@ -3,8 +3,8 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public interface IAuthResponseFactory
+    public interface IAuthModelFactory
     {
-        AuthResponseDto CreateAuthResponse(User user, string token, DateTime expiresAt);
+        AuthResponseDto PrepareAuthResponseModel(User user, string token, DateTime expiresAt);
     }
 }

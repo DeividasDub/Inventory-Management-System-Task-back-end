@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public class AuthResponseFactory : IAuthResponseFactory
+    public class AuthModelFactory : IAuthModelFactory
     {
-        public AuthResponseDto CreateAuthResponse(User user, string token, DateTime expiresAt)
+        public AuthResponseDto PrepareAuthResponseModel(User user, string token, DateTime expiresAt)
         {
             return new AuthResponseDto
             {

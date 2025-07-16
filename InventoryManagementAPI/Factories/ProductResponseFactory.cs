@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public class ProductResponseFactory : IProductResponseFactory
+    public class ProductModelFactory : IProductModelFactory
     {
-        public ProductResponseDto CreateProductResponse(Product product)
+        public ProductResponseDto PrepareProductResponseModel(Product product)
         {
             return new ProductResponseDto
             {
@@ -20,7 +20,7 @@ namespace InventoryManagementAPI.Factories
             };
         }
 
-        public ProductResponseDto CreateProductResponse(Product product, Supplier supplier)
+        public ProductResponseDto PrepareProductResponseModel(Product product, Supplier supplier)
         {
             return new ProductResponseDto
             {
@@ -35,9 +35,9 @@ namespace InventoryManagementAPI.Factories
             };
         }
 
-        public IEnumerable<ProductResponseDto> CreateProductResponses(IEnumerable<Product> products)
+        public IEnumerable<ProductResponseDto> PrepareProductListResponseModel(IEnumerable<Product> products)
         {
-            return products.Select(CreateProductResponse);
+            return products.Select(PrepareProductResponseModel);
         }
     }
 }

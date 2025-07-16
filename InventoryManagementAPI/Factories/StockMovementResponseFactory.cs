@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public class StockMovementResponseFactory : IStockMovementResponseFactory
+    public class StockMovementModelFactory : IStockMovementModelFactory
     {
-        public StockMovementResponseDto CreateStockMovementResponse(StockMovement stockMovement)
+        public StockMovementResponseDto PrepareStockMovementResponseModel(StockMovement stockMovement)
         {
             return new StockMovementResponseDto
             {
@@ -23,9 +23,9 @@ namespace InventoryManagementAPI.Factories
             };
         }
 
-        public IEnumerable<StockMovementResponseDto> CreateStockMovementResponses(IEnumerable<StockMovement> stockMovements)
+        public IEnumerable<StockMovementResponseDto> PrepareStockMovementListResponseModel(IEnumerable<StockMovement> stockMovements)
         {
-            return stockMovements.Select(CreateStockMovementResponse);
+            return stockMovements.Select(PrepareStockMovementResponseModel);
         }
     }
 }

@@ -3,10 +3,10 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public interface IProductResponseFactory
+    public interface IProductModelFactory
     {
-        ProductResponseDto CreateProductResponse(Product product);
-        ProductResponseDto CreateProductResponse(Product product, Supplier supplier);
-        IEnumerable<ProductResponseDto> CreateProductResponses(IEnumerable<Product> products);
+        ProductResponseDto PrepareProductResponseModel(Product product);
+        ProductResponseDto PrepareProductResponseModel(Product product, Supplier supplier);
+        IEnumerable<ProductResponseDto> PrepareProductListResponseModel(IEnumerable<Product> products);
     }
 }

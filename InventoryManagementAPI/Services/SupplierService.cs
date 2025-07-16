@@ -2,22 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Supplier;
 using InventoryManagementAPI.Models;
-using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class SupplierService : ISupplierService
     {
         private readonly ApplicationDbContext _context;
-        private readonly ISupplierResponseFactory _supplierResponseFactory;
 
-        public SupplierService(ApplicationDbContext context, ISupplierResponseFactory supplierResponseFactory)
+        public SupplierService(ApplicationDbContext context)
         {
             _context = context;
-            _supplierResponseFactory = supplierResponseFactory;
         }
 
-        public async Task<SupplierResponseDto?> CreateSupplierAsync(CreateSupplierRequestDto request)
+        public async Task<Supplier?> CreateSupplierAsync(CreateSupplierRequestDto request)
         {
             if (await _context.Suppliers.AnyAsync(s => s.Email == request.Email))
             {
@@ -37,10 +34,10 @@ namespace InventoryManagementAPI.Services
             _context.Suppliers.Add(supplier);
             await _context.SaveChangesAsync();
 
-            return _supplierResponseFactory.CreateSupplierResponse(supplier);
+            return supplier;
         }
 
-        public async Task<SupplierResponseDto?> UpdateSupplierAsync(int id, UpdateSupplierRequestDto request)
+        public async Task<Supplier?> UpdateSupplierAsync(int id, UpdateSupplierRequestDto request)
         {
             var supplier = await _context.Suppliers.FindAsync(id);
             if (supplier == null)
@@ -61,7 +58,7 @@ namespace InventoryManagementAPI.Services
 
             await _context.SaveChangesAsync();
 
-            return _supplierResponseFactory.CreateSupplierResponse(supplier);
+            return supplier;
         }
 
         public async Task<bool> DeleteSupplierAsync(int id)
@@ -83,22 +80,16 @@ namespace InventoryManagementAPI.Services
             return true;
         }
 
-        public async Task<SupplierResponseDto?> GetSupplierByIdAsync(int id)
+        public async Task<Supplier?> GetSupplierByIdAsync(int id)
         {
             var supplier = await _context.Suppliers.FindAsync(id);
-            if (supplier == null)
-            {
-                return null;
-            }
-
-            return _supplierResponseFactory.CreateSupplierResponse(supplier);
+            return supplier;
         }
 
-        public async Task<IEnumerable<SupplierResponseDto>> GetAllSuppliersAsync()
+        public async Task<IEnumerable<Supplier>> GetAllSuppliersAsync()
         {
             var suppliers = await _context.Suppliers.ToListAsync();
-
-            return _supplierResponseFactory.CreateSupplierResponses(suppliers);
+            return suppliers;
         }
     }
 }

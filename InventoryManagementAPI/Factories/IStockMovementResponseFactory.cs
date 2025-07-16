@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public interface IStockMovementResponseFactory
+    public interface IStockMovementModelFactory
     {
-        StockMovementResponseDto CreateStockMovementResponse(StockMovement stockMovement);
-        IEnumerable<StockMovementResponseDto> CreateStockMovementResponses(IEnumerable<StockMovement> stockMovements);
+        StockMovementResponseDto PrepareStockMovementResponseModel(StockMovement stockMovement);
+        IEnumerable<StockMovementResponseDto> PrepareStockMovementListResponseModel(IEnumerable<StockMovement> stockMovements);
     }
 }
