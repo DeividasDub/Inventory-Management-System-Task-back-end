@@ -2,16 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Product;
 using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class ProductService : IProductService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IProductResponseFactory _productResponseFactory;
 
-        public ProductService(ApplicationDbContext context)
+        public ProductService(ApplicationDbContext context, IProductResponseFactory productResponseFactory)
         {
             _context = context;
+            _productResponseFactory = productResponseFactory;
         }
 
         public async Task<ProductResponseDto?> CreateProductAsync(CreateProductRequestDto request)
@@ -40,17 +43,7 @@ namespace InventoryManagementAPI.Services
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return new ProductResponseDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                SKU = product.SKU,
-                QuantityInStock = product.QuantityInStock,
-                Price = product.Price,
-                SupplierId = product.SupplierId,
-                SupplierName = supplier.Name,
-                CreatedOn = product.CreatedOn
-            };
+            return _productResponseFactory.CreateProductResponse(product, supplier);
         }
 
         public async Task<ProductResponseDto?> UpdateProductAsync(int id, UpdateProductRequestDto request)
@@ -80,17 +73,7 @@ namespace InventoryManagementAPI.Services
 
             await _context.SaveChangesAsync();
 
-            return new ProductResponseDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                SKU = product.SKU,
-                QuantityInStock = product.QuantityInStock,
-                Price = product.Price,
-                SupplierId = product.SupplierId,
-                SupplierName = supplier.Name,
-                CreatedOn = product.CreatedOn
-            };
+            return _productResponseFactory.CreateProductResponse(product, supplier);
         }
 
         public async Task<bool> DeleteProductAsync(int id)
@@ -117,37 +100,16 @@ namespace InventoryManagementAPI.Services
                 return null;
             }
 
-            return new ProductResponseDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                SKU = product.SKU,
-                QuantityInStock = product.QuantityInStock,
-                Price = product.Price,
-                SupplierId = product.SupplierId,
-                SupplierName = product.Supplier.Name,
-                CreatedOn = product.CreatedOn
-            };
+            return _productResponseFactory.CreateProductResponse(product);
         }
 
         public async Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync()
         {
             var products = await _context.Products
                 .Include(p => p.Supplier)
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    SKU = p.SKU,
-                    QuantityInStock = p.QuantityInStock,
-                    Price = p.Price,
-                    SupplierId = p.SupplierId,
-                    SupplierName = p.Supplier.Name,
-                    CreatedOn = p.CreatedOn
-                })
                 .ToListAsync();
 
-            return products;
+            return _productResponseFactory.CreateProductResponses(products);
         }
 
         public async Task<IEnumerable<ProductResponseDto>> SearchProductsAsync(ProductSearchRequestDto searchRequest)
@@ -174,21 +136,9 @@ namespace InventoryManagementAPI.Services
                 query = query.Where(p => p.QuantityInStock <= searchRequest.LowStockThreshold.Value);
             }
 
-            var products = await query
-                .Select(p => new ProductResponseDto
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    SKU = p.SKU,
-                    QuantityInStock = p.QuantityInStock,
-                    Price = p.Price,
-                    SupplierId = p.SupplierId,
-                    SupplierName = p.Supplier.Name,
-                    CreatedOn = p.CreatedOn
-                })
-                .ToListAsync();
+            var products = await query.ToListAsync();
 
-            return products;
+            return _productResponseFactory.CreateProductResponses(products);
         }
     }
 }

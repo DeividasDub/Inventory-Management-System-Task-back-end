@@ -2,16 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.StockMovement;
 using InventoryManagementAPI.Models;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class StockMovementService : IStockMovementService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IStockMovementResponseFactory _stockMovementResponseFactory;
 
-        public StockMovementService(ApplicationDbContext context)
+        public StockMovementService(ApplicationDbContext context, IStockMovementResponseFactory stockMovementResponseFactory)
         {
             _context = context;
+            _stockMovementResponseFactory = stockMovementResponseFactory;
         }
 
         public async Task<StockMovementResponseDto?> CreateStockMovementAsync(CreateStockMovementRequestDto request, int userId)
@@ -65,19 +68,10 @@ namespace InventoryManagementAPI.Services
                     .Include(p => p.Supplier)
                     .FirstAsync(p => p.Id == request.ProductId);
 
-                return new StockMovementResponseDto
-                {
-                    Id = stockMovement.Id,
-                    ProductId = stockMovement.ProductId,
-                    ProductName = productWithSupplier.Name,
-                    ProductSKU = productWithSupplier.SKU,
-                    Type = stockMovement.Type,
-                    Quantity = stockMovement.Quantity,
-                    Reason = stockMovement.Reason,
-                    Date = stockMovement.Date,
-                    CreatedByUserId = stockMovement.CreatedByUserId,
-                    CreatedByUserName = $"{user.FirstName} {user.LastName}"
-                };
+                stockMovement.Product = productWithSupplier;
+                stockMovement.CreatedByUser = user;
+
+                return _stockMovementResponseFactory.CreateStockMovementResponse(stockMovement);
             }
             catch
             {
@@ -94,22 +88,9 @@ namespace InventoryManagementAPI.Services
                 .Where(sm => sm.ProductId == productId)
                 .OrderByDescending(sm => sm.Date)
                 .Take(count)
-                .Select(sm => new StockMovementResponseDto
-                {
-                    Id = sm.Id,
-                    ProductId = sm.ProductId,
-                    ProductName = sm.Product.Name,
-                    ProductSKU = sm.Product.SKU,
-                    Type = sm.Type,
-                    Quantity = sm.Quantity,
-                    Reason = sm.Reason,
-                    Date = sm.Date,
-                    CreatedByUserId = sm.CreatedByUserId,
-                    CreatedByUserName = $"{sm.CreatedByUser.FirstName} {sm.CreatedByUser.LastName}"
-                })
                 .ToListAsync();
 
-            return stockMovements;
+            return _stockMovementResponseFactory.CreateStockMovementResponses(stockMovements);
         }
     }
 }
