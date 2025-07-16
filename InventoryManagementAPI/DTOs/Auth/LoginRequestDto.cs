@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace InventoryManagementAPI.DTOs
+namespace InventoryManagementAPI.DTOs.Auth
 {
     public class LoginRequestDto
     {

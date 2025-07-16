@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace InventoryManagementAPI.DTOs
+namespace InventoryManagementAPI.DTOs.Role
 {
-    public class CreateRoleRequestDto
+    public class UpdateRoleRequestDto
     {
         [Required]
         [MaxLength(50)]

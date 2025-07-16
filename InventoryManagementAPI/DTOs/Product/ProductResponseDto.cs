@@ -1,4 +1,4 @@
-namespace InventoryManagementAPI.DTOs
+namespace InventoryManagementAPI.DTOs.Product
 {
     public class ProductResponseDto
     {

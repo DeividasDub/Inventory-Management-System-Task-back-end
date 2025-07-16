@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
 using InventoryManagementAPI.Data;
-using InventoryManagementAPI.DTOs;
+using InventoryManagementAPI.DTOs.User;
 using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Services

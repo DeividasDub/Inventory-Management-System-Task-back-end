@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using InventoryManagementAPI.DTOs;
+using InventoryManagementAPI.DTOs.User;
 using InventoryManagementAPI.Services;
 using InventoryManagementAPI.Models;
 

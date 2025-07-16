@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace InventoryManagementAPI.DTOs
+namespace InventoryManagementAPI.DTOs.Auth
 {
-    public class CreateUserRequestDto
+    public class RegisterRequestDto
     {
         [Required]
         [EmailAddress]
@@ -19,8 +19,5 @@ namespace InventoryManagementAPI.DTOs
         [Required]
         [MinLength(6)]
         public string Password { get; set; } = string.Empty;
-        
-        [Required]
-        public int RoleId { get; set; }
     }
 }

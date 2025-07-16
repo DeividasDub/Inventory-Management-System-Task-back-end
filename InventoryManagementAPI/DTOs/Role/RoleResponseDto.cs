@@ -1,4 +1,4 @@
-namespace InventoryManagementAPI.DTOs
+namespace InventoryManagementAPI.DTOs.Role
 {
     public class RoleResponseDto
     {

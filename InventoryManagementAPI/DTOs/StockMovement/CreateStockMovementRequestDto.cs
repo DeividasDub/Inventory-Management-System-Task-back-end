@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using InventoryManagementAPI.Models;
 
-namespace InventoryManagementAPI.DTOs
+namespace InventoryManagementAPI.DTOs.StockMovement
 {
     public class CreateStockMovementRequestDto
     {

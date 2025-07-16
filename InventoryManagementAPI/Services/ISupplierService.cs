@@ -1,4 +1,4 @@
-using InventoryManagementAPI.DTOs;
+using InventoryManagementAPI.DTOs.Supplier;
 
 namespace InventoryManagementAPI.Services
 {
