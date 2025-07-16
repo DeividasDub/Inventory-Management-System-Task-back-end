@@ -2,22 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.StockMovement;
 using InventoryManagementAPI.Models;
-using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class StockMovementService : IStockMovementService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IStockMovementResponseFactory _stockMovementResponseFactory;
 
-        public StockMovementService(ApplicationDbContext context, IStockMovementResponseFactory stockMovementResponseFactory)
+        public StockMovementService(ApplicationDbContext context)
         {
             _context = context;
-            _stockMovementResponseFactory = stockMovementResponseFactory;
         }
 
-        public async Task<StockMovementResponseDto?> CreateStockMovementAsync(CreateStockMovementRequestDto request, int userId)
+        public async Task<StockMovement?> CreateStockMovementAsync(CreateStockMovementRequestDto request, int userId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             
@@ -71,7 +68,7 @@ namespace InventoryManagementAPI.Services
                 stockMovement.Product = productWithSupplier;
                 stockMovement.CreatedByUser = user;
 
-                return _stockMovementResponseFactory.CreateStockMovementResponse(stockMovement);
+                return stockMovement;
             }
             catch
             {
@@ -80,7 +77,7 @@ namespace InventoryManagementAPI.Services
             }
         }
 
-        public async Task<IEnumerable<StockMovementResponseDto>> GetLastStockMovementsAsync(int productId, int count = 10)
+        public async Task<IEnumerable<StockMovement>> GetLastStockMovementsAsync(int productId, int count = 10)
         {
             var stockMovements = await _context.StockMovements
                 .Include(sm => sm.Product)
@@ -90,7 +87,7 @@ namespace InventoryManagementAPI.Services
                 .Take(count)
                 .ToListAsync();
 
-            return _stockMovementResponseFactory.CreateStockMovementResponses(stockMovements);
+            return stockMovements;
         }
     }
 }

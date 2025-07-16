@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using InventoryManagementAPI.DTOs.Auth;
 using InventoryManagementAPI.Services;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Controllers
 {
@@ -9,10 +10,12 @@ namespace InventoryManagementAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IAuthModelFactory _authModelFactory;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IAuthModelFactory authModelFactory)
         {
             _authService = authService;
+            _authModelFactory = authModelFactory;
         }
 
         [HttpPost("register")]
@@ -23,14 +26,16 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _authService.RegisterAsync(request);
+            var (user, token) = await _authService.RegisterAsync(request);
             
-            if (result == null)
+            if (user == null || token == null)
             {
                 return BadRequest(new { message = "Email already exists" });
             }
 
-            return Ok(result);
+            var model = _authModelFactory.PrepareAuthResponseModel(user, token, DateTime.UtcNow.AddHours(24));
+
+            return Ok(model);
         }
 
         [HttpPost("login")]
@@ -41,14 +46,16 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _authService.LoginAsync(request);
+            var (user, token) = await _authService.LoginAsync(request);
             
-            if (result == null)
+            if (user == null || token == null)
             {
                 return Unauthorized(new { message = "Invalid email or password" });
             }
 
-            return Ok(result);
+            var model = _authModelFactory.PrepareAuthResponseModel(user, token, DateTime.UtcNow.AddHours(24));
+
+            return Ok(model);
         }
     }
 }

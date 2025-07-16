@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using InventoryManagementAPI.DTOs.Product;
 using InventoryManagementAPI.Services;
+using InventoryManagementAPI.Factories;
 using System.Security.Claims;
 
 namespace InventoryManagementAPI.Controllers
@@ -12,10 +13,12 @@ namespace InventoryManagementAPI.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IProductModelFactory _productModelFactory;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IProductModelFactory productModelFactory)
         {
             _productService = productService;
+            _productModelFactory = productModelFactory;
         }
 
         [HttpPost]
@@ -27,14 +30,16 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _productService.CreateProductAsync(request);
+            var product = await _productService.CreateProductAsync(request);
             
-            if (result == null)
+            if (product == null)
             {
                 return BadRequest(new { message = "SKU already exists or supplier not found" });
             }
 
-            return Ok(result);
+            var model = _productModelFactory.PrepareProductResponseModel(product);
+
+            return Ok(model);
         }
 
         [HttpPut("{id}")]
@@ -46,14 +51,16 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _productService.UpdateProductAsync(id, request);
+            var product = await _productService.UpdateProductAsync(id, request);
             
-            if (result == null)
+            if (product == null)
             {
                 return NotFound(new { message = "Product not found, SKU already exists, or supplier not found" });
             }
 
-            return Ok(result);
+            var model = _productModelFactory.PrepareProductResponseModel(product);
+
+            return Ok(model);
         }
 
         [HttpDelete("{id}")]
@@ -74,14 +81,16 @@ namespace InventoryManagementAPI.Controllers
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> GetProduct(int id)
         {
-            var result = await _productService.GetProductByIdAsync(id);
+            var product = await _productService.GetProductByIdAsync(id);
             
-            if (result == null)
+            if (product == null)
             {
                 return NotFound(new { message = "Product not found" });
             }
 
-            return Ok(result);
+            var model = _productModelFactory.PrepareProductResponseModel(product);
+
+            return Ok(model);
         }
 
         [HttpGet]
@@ -89,7 +98,8 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productService.GetAllProductsAsync();
-            return Ok(products);
+            var model = _productModelFactory.PrepareProductListResponseModel(products);
+            return Ok(model);
         }
 
         [HttpPost("search")]
@@ -97,7 +107,8 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> SearchProducts([FromBody] ProductSearchRequestDto searchRequest)
         {
             var products = await _productService.SearchProductsAsync(searchRequest);
-            return Ok(products);
+            var model = _productModelFactory.PrepareProductListResponseModel(products);
+            return Ok(model);
         }
     }
 }

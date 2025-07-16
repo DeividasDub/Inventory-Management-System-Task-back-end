@@ -1,14 +1,15 @@
 using InventoryManagementAPI.DTOs.Product;
+using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Services
 {
     public interface IProductService
     {
-        Task<ProductResponseDto?> CreateProductAsync(CreateProductRequestDto request);
-        Task<ProductResponseDto?> UpdateProductAsync(int id, UpdateProductRequestDto request);
+        Task<Product?> CreateProductAsync(CreateProductRequestDto request);
+        Task<Product?> UpdateProductAsync(int id, UpdateProductRequestDto request);
         Task<bool> DeleteProductAsync(int id);
-        Task<ProductResponseDto?> GetProductByIdAsync(int id);
-        Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync();
-        Task<IEnumerable<ProductResponseDto>> SearchProductsAsync(ProductSearchRequestDto searchRequest);
+        Task<Product?> GetProductByIdAsync(int id);
+        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<IEnumerable<Product>> SearchProductsAsync(ProductSearchRequestDto searchRequest);
     }
 }

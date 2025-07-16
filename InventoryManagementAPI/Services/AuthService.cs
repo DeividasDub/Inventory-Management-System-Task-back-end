@@ -3,7 +3,6 @@ using BCrypt.Net;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Auth;
 using InventoryManagementAPI.Models;
-using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
@@ -11,22 +10,18 @@ namespace InventoryManagementAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
-        private readonly IConfiguration _configuration;
-        private readonly IAuthResponseFactory _authResponseFactory;
 
-        public AuthService(ApplicationDbContext context, IJwtService jwtService, IConfiguration configuration, IAuthResponseFactory authResponseFactory)
+        public AuthService(ApplicationDbContext context, IJwtService jwtService)
         {
             _context = context;
             _jwtService = jwtService;
-            _configuration = configuration;
-            _authResponseFactory = authResponseFactory;
         }
 
-        public async Task<AuthResponseDto?> RegisterAsync(RegisterRequestDto request)
+        public async Task<(User?, string?)> RegisterAsync(RegisterRequestDto request)
         {
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
             {
-                return null;
+                return (null, null);
             }
 
             var user = new User
@@ -55,13 +50,11 @@ namespace InventoryManagementAPI.Services
                 .FirstAsync(u => u.Id == user.Id);
 
             var token = _jwtService.GenerateToken(userWithRoles);
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var expirationHours = int.Parse(jwtSettings["ExpirationHours"] ?? "24");
 
-            return _authResponseFactory.CreateAuthResponse(userWithRoles, token, DateTime.UtcNow.AddHours(expirationHours));
+            return (userWithRoles, token);
         }
 
-        public async Task<AuthResponseDto?> LoginAsync(LoginRequestDto request)
+        public async Task<(User?, string?)> LoginAsync(LoginRequestDto request)
         {
             var user = await _context.Users
                 .Include(u => u.UserRoleMappings)
@@ -70,14 +63,12 @@ namespace InventoryManagementAPI.Services
             
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
-                return null;
+                return (null, null);
             }
 
             var token = _jwtService.GenerateToken(user);
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var expirationHours = int.Parse(jwtSettings["ExpirationHours"] ?? "24");
 
-            return _authResponseFactory.CreateAuthResponse(user, token, DateTime.UtcNow.AddHours(expirationHours));
+            return (user, token);
         }
     }
 }

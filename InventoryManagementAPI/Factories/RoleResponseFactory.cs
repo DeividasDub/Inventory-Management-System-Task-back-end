@@ -3,20 +3,22 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public class RoleResponseFactory : IRoleResponseFactory
+    public class RoleModelFactory : IRoleModelFactory
     {
-        public RoleResponseDto CreateRoleResponse(UserRole role)
+        public RoleResponseDto PrepareRoleResponseModel(UserRole role)
         {
             return new RoleResponseDto
             {
                 Id = role.Id,
-                Name = role.Name
+                Name = role.Name,
+                Description = role.Description,
+                CreatedOn = role.CreatedOn
             };
         }
 
-        public IEnumerable<RoleResponseDto> CreateRoleResponses(IEnumerable<UserRole> roles)
+        public IEnumerable<RoleResponseDto> PrepareRoleListResponseModel(IEnumerable<UserRole> roles)
         {
-            return roles.Select(CreateRoleResponse);
+            return roles.Select(PrepareRoleResponseModel);
         }
     }
 }

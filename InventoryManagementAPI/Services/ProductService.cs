@@ -2,22 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using InventoryManagementAPI.Data;
 using InventoryManagementAPI.DTOs.Product;
 using InventoryManagementAPI.Models;
-using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Services
 {
     public class ProductService : IProductService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IProductResponseFactory _productResponseFactory;
 
-        public ProductService(ApplicationDbContext context, IProductResponseFactory productResponseFactory)
+        public ProductService(ApplicationDbContext context)
         {
             _context = context;
-            _productResponseFactory = productResponseFactory;
         }
 
-        public async Task<ProductResponseDto?> CreateProductAsync(CreateProductRequestDto request)
+        public async Task<Product?> CreateProductAsync(CreateProductRequestDto request)
         {
             if (await _context.Products.AnyAsync(p => p.SKU == request.SKU))
             {
@@ -43,10 +40,11 @@ namespace InventoryManagementAPI.Services
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return _productResponseFactory.CreateProductResponse(product, supplier);
+            product.Supplier = supplier;
+            return product;
         }
 
-        public async Task<ProductResponseDto?> UpdateProductAsync(int id, UpdateProductRequestDto request)
+        public async Task<Product?> UpdateProductAsync(int id, UpdateProductRequestDto request)
         {
             var product = await _context.Products.Include(p => p.Supplier).FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
@@ -73,7 +71,8 @@ namespace InventoryManagementAPI.Services
 
             await _context.SaveChangesAsync();
 
-            return _productResponseFactory.CreateProductResponse(product, supplier);
+            product.Supplier = supplier;
+            return product;
         }
 
         public async Task<bool> DeleteProductAsync(int id)
@@ -89,30 +88,25 @@ namespace InventoryManagementAPI.Services
             return true;
         }
 
-        public async Task<ProductResponseDto?> GetProductByIdAsync(int id)
+        public async Task<Product?> GetProductByIdAsync(int id)
         {
             var product = await _context.Products
                 .Include(p => p.Supplier)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (product == null)
-            {
-                return null;
-            }
-
-            return _productResponseFactory.CreateProductResponse(product);
+            return product;
         }
 
-        public async Task<IEnumerable<ProductResponseDto>> GetAllProductsAsync()
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
             var products = await _context.Products
                 .Include(p => p.Supplier)
                 .ToListAsync();
 
-            return _productResponseFactory.CreateProductResponses(products);
+            return products;
         }
 
-        public async Task<IEnumerable<ProductResponseDto>> SearchProductsAsync(ProductSearchRequestDto searchRequest)
+        public async Task<IEnumerable<Product>> SearchProductsAsync(ProductSearchRequestDto searchRequest)
         {
             var query = _context.Products.Include(p => p.Supplier).AsQueryable();
 
@@ -138,7 +132,7 @@ namespace InventoryManagementAPI.Services
 
             var products = await query.ToListAsync();
 
-            return _productResponseFactory.CreateProductResponses(products);
+            return products;
         }
     }
 }

@@ -1,13 +1,14 @@
 using InventoryManagementAPI.DTOs.Supplier;
+using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Services
 {
     public interface ISupplierService
     {
-        Task<SupplierResponseDto?> CreateSupplierAsync(CreateSupplierRequestDto request);
-        Task<SupplierResponseDto?> UpdateSupplierAsync(int id, UpdateSupplierRequestDto request);
+        Task<Supplier?> CreateSupplierAsync(CreateSupplierRequestDto request);
+        Task<Supplier?> UpdateSupplierAsync(int id, UpdateSupplierRequestDto request);
         Task<bool> DeleteSupplierAsync(int id);
-        Task<SupplierResponseDto?> GetSupplierByIdAsync(int id);
-        Task<IEnumerable<SupplierResponseDto>> GetAllSuppliersAsync();
+        Task<Supplier?> GetSupplierByIdAsync(int id);
+        Task<IEnumerable<Supplier>> GetAllSuppliersAsync();
     }
 }

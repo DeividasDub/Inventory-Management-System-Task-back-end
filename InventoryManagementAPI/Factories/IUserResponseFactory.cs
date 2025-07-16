@@ -3,10 +3,10 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public interface IUserResponseFactory
+    public interface IUserModelFactory
     {
-        UserResponseDto CreateUserResponse(User user, IEnumerable<string> roleNames);
-        UserResponseDto CreateUserResponse(User user, string roleName);
-        IEnumerable<UserResponseDto> CreateUserResponses(IEnumerable<User> users);
+        UserResponseDto PrepareUserResponseModel(User user, string roleName);
+        UserResponseDto PrepareUserResponseModel(User user);
+        IEnumerable<UserResponseDto> PrepareUserListResponseModel(IEnumerable<User> users);
     }
 }

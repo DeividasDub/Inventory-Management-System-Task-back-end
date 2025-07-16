@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public interface IRoleResponseFactory
+    public interface IRoleModelFactory
     {
-        RoleResponseDto CreateRoleResponse(UserRole role);
-        IEnumerable<RoleResponseDto> CreateRoleResponses(IEnumerable<UserRole> roles);
+        RoleResponseDto PrepareRoleResponseModel(UserRole role);
+        IEnumerable<RoleResponseDto> PrepareRoleListResponseModel(IEnumerable<UserRole> roles);
     }
 }

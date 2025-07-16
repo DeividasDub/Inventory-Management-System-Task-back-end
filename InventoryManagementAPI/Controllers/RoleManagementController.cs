@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using InventoryManagementAPI.DTOs.Role;
 using InventoryManagementAPI.Services;
+using InventoryManagementAPI.Factories;
 
 namespace InventoryManagementAPI.Controllers
 {
@@ -11,13 +12,15 @@ namespace InventoryManagementAPI.Controllers
     public class RoleManagementController : ControllerBase
     {
         private readonly IRoleManagementService _roleManagementService;
+        private readonly IRoleModelFactory _roleModelFactory;
 
-        public RoleManagementController(IRoleManagementService roleManagementService)
+        public RoleManagementController(IRoleManagementService roleManagementService, IRoleModelFactory roleModelFactory)
         {
             _roleManagementService = roleManagementService;
+            _roleModelFactory = roleModelFactory;
         }
 
-        [HttpPost("create-role")]
+        [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequestDto request)
         {
             if (!ModelState.IsValid)
@@ -25,14 +28,16 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _roleManagementService.CreateRoleAsync(request);
+            var role = await _roleManagementService.CreateRoleAsync(request);
             
-            if (result == null)
+            if (role == null)
             {
-                return BadRequest(new { message = "Role name already exists" });
+                return BadRequest(new { message = "Role with this name already exists" });
             }
 
-            return Ok(result);
+            var model = _roleModelFactory.PrepareRoleResponseModel(role);
+
+            return Ok(model);
         }
 
         [HttpPut("{roleId}")]
@@ -43,14 +48,16 @@ namespace InventoryManagementAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _roleManagementService.UpdateRoleAsync(roleId, request);
+            var role = await _roleManagementService.UpdateRoleAsync(roleId, request);
             
-            if (result == null)
+            if (role == null)
             {
-                return BadRequest(new { message = "Role not found or name already exists" });
+                return NotFound(new { message = "Role not found or name already exists" });
             }
 
-            return Ok(result);
+            var model = _roleModelFactory.PrepareRoleResponseModel(role);
+
+            return Ok(model);
         }
 
         [HttpDelete("{roleId}")]
@@ -66,11 +73,12 @@ namespace InventoryManagementAPI.Controllers
             return Ok(new { message = "Role deleted successfully" });
         }
 
-        [HttpGet("roles")]
+        [HttpGet]
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _roleManagementService.GetAllRolesAsync();
-            return Ok(roles);
+            var model = _roleModelFactory.PrepareRoleListResponseModel(roles);
+            return Ok(model);
         }
     }
 }

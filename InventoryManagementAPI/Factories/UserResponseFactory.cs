@@ -3,9 +3,9 @@ using InventoryManagementAPI.Models;
 
 namespace InventoryManagementAPI.Factories
 {
-    public class UserResponseFactory : IUserResponseFactory
+    public class UserModelFactory : IUserModelFactory
     {
-        public UserResponseDto CreateUserResponse(User user, IEnumerable<string> roleNames)
+        public UserResponseDto PrepareUserResponseModel(User user, string roleName)
         {
             return new UserResponseDto
             {
@@ -13,19 +13,27 @@ namespace InventoryManagementAPI.Factories
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                RoleNames = roleNames.ToList(),
+                RoleNames = new List<string> { roleName },
                 CreatedOn = user.CreatedOn
             };
         }
 
-        public UserResponseDto CreateUserResponse(User user, string roleName)
+        public UserResponseDto PrepareUserResponseModel(User user)
         {
-            return CreateUserResponse(user, new List<string> { roleName });
+            return new UserResponseDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                RoleNames = user.UserRoleMappings?.Select(urm => urm.Role.Name).ToList() ?? new List<string>(),
+                CreatedOn = user.CreatedOn
+            };
         }
 
-        public IEnumerable<UserResponseDto> CreateUserResponses(IEnumerable<User> users)
+        public IEnumerable<UserResponseDto> PrepareUserListResponseModel(IEnumerable<User> users)
         {
-            return users.Select(u => CreateUserResponse(u, u.UserRoleMappings.Select(urm => urm.Role.Name)));
+            return users.Select(PrepareUserResponseModel);
         }
     }
 }
