@@ -60,6 +60,26 @@ namespace InventoryManagementAPI.Controllers
             return Ok(model);
         }
 
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UpdateUserRequestDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userManagementService.UpdateUserAsync(userId, request);
+            
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found, email already exists, or role not found" });
+            }
+
+            var model = _userModelFactory.PrepareUserResponseModel(user);
+
+            return Ok(model);
+        }
+
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {

@@ -99,6 +99,52 @@ namespace InventoryManagementAPI.Services
             return users;
         }
 
+        public async Task<User?> UpdateUserAsync(int userId, UpdateUserRequestDto request)
+        {
+            var user = await _context.Users
+                .Include(u => u.UserRoleMappings)
+                .ThenInclude(urm => urm.Role)
+                .FirstOrDefaultAsync(u => u.Id == userId && !u.Deleted);
+            
+            if (user == null)
+            {
+                return null;
+            }
+
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email && u.Id != userId && !u.Deleted))
+            {
+                return null;
+            }
+
+            var role = await _context.UserRoles.FirstOrDefaultAsync(r => r.Id == request.RoleId);
+            if (role == null)
+            {
+                return null;
+            }
+
+            user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+
+            if (!user.UserRoleMappings.Any(urm => urm.RoleId == request.RoleId))
+            {
+                _context.UserRoleMappings.RemoveRange(user.UserRoleMappings);
+                
+                var userRoleMapping = new UserRoleMapping
+                {
+                    UserId = userId,
+                    RoleId = role.Id
+                };
+                _context.UserRoleMappings.Add(userRoleMapping);
+                
+                user.UserRoleMappings = new List<UserRoleMapping> { userRoleMapping };
+                userRoleMapping.Role = role;
+            }
+
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
         public async Task<bool> DeleteUserAsync(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
