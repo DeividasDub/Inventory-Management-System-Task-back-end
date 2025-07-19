@@ -19,7 +19,7 @@ namespace InventoryManagementAPI.Services
 
         public async Task<(User?, string?)> RegisterAsync(RegisterRequestDto request)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email && !u.Deleted))
             {
                 return (null, null);
             }
@@ -59,7 +59,7 @@ namespace InventoryManagementAPI.Services
             var user = await _context.Users
                 .Include(u => u.UserRoleMappings)
                 .ThenInclude(urm => urm.Role)
-                .FirstOrDefaultAsync(u => u.Email == request.Email);
+                .FirstOrDefaultAsync(u => u.Email == request.Email && !u.Deleted);
             
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {

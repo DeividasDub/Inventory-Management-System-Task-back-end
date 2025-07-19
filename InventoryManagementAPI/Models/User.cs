@@ -23,6 +23,8 @@ namespace InventoryManagementAPI.Models
         
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         
+        public bool Deleted { get; set; } = false;
+        
         public ICollection<UserRoleMapping> UserRoleMappings { get; set; } = new List<UserRoleMapping>();
     }
 }
