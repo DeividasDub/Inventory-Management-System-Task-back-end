@@ -14,7 +14,8 @@ namespace InventoryManagementAPI.Factories
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 RoleNames = new List<string> { roleName },
-                CreatedOn = user.CreatedOn
+                CreatedOn = user.CreatedOn,
+                Deleted = user.Deleted
             };
         }
 
@@ -27,7 +28,8 @@ namespace InventoryManagementAPI.Factories
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 RoleNames = user.UserRoleMappings?.Select(urm => urm.Role.Name).ToList() ?? new List<string>(),
-                CreatedOn = user.CreatedOn
+                CreatedOn = user.CreatedOn,
+                Deleted = user.Deleted
             };
         }
 
