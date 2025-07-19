@@ -14,7 +14,9 @@ namespace InventoryManagementAPI.Controllers
         private readonly ISupplierService _supplierService;
         private readonly ISupplierModelFactory _supplierModelFactory;
 
-        public SupplierController(ISupplierService supplierService, ISupplierModelFactory supplierModelFactory)
+        public SupplierController(
+            ISupplierService supplierService, 
+            ISupplierModelFactory supplierModelFactory)
         {
             _supplierService = supplierService;
             _supplierModelFactory = supplierModelFactory;
@@ -97,7 +99,9 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> GetAllSuppliers()
         {
             var suppliers = await _supplierService.GetAllSuppliersAsync();
+
             var model = _supplierModelFactory.PrepareSupplierListResponseModel(suppliers);
+
             return Ok(model);
         }
     }

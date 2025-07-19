@@ -16,7 +16,11 @@ namespace InventoryManagementAPI.Controllers
         private readonly IProductModelFactory _productModelFactory;
         private readonly IStockMovementModelFactory _stockMovementModelFactory;
 
-        public ReportController(IProductService productService, IStockMovementService stockMovementService, IProductModelFactory productModelFactory, IStockMovementModelFactory stockMovementModelFactory)
+        public ReportController(
+            IProductService productService, 
+            IStockMovementService stockMovementService, 
+            IProductModelFactory productModelFactory, 
+            IStockMovementModelFactory stockMovementModelFactory)
         {
             _productService = productService;
             _stockMovementService = stockMovementService;
@@ -34,7 +38,9 @@ namespace InventoryManagementAPI.Controllers
             };
 
             var products = await _productService.SearchProductsAsync(searchRequest);
+
             var model = _productModelFactory.PrepareProductListResponseModel(products);
+
             return Ok(model);
         }
 
@@ -42,7 +48,9 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> GetProductStockMovements(int productId, [FromQuery] int count = 10)
         {
             var stockMovements = await _stockMovementService.GetLastStockMovementsAsync(productId, count);
+
             var model = _stockMovementModelFactory.PrepareStockMovementListResponseModel(stockMovements);
+
             return Ok(model);
         }
     }

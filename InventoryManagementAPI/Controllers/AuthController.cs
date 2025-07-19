@@ -12,7 +12,9 @@ namespace InventoryManagementAPI.Controllers
         private readonly IAuthService _authService;
         private readonly IAuthModelFactory _authModelFactory;
 
-        public AuthController(IAuthService authService, IAuthModelFactory authModelFactory)
+        public AuthController(
+            IAuthService authService, 
+            IAuthModelFactory authModelFactory)
         {
             _authService = authService;
             _authModelFactory = authModelFactory;

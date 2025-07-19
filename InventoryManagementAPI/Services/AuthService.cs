@@ -11,7 +11,9 @@ namespace InventoryManagementAPI.Services
         private readonly ApplicationDbContext _context;
         private readonly IJwtService _jwtService;
 
-        public AuthService(ApplicationDbContext context, IJwtService jwtService)
+        public AuthService(
+            ApplicationDbContext context, 
+            IJwtService jwtService)
         {
             _context = context;
             _jwtService = jwtService;
