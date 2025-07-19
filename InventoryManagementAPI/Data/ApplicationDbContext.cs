@@ -36,6 +36,7 @@ namespace InventoryManagementAPI.Data
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.PasswordHash).IsRequired();
                 entity.Property(e => e.CreatedOn).IsRequired();
+                entity.Property(e => e.Deleted).IsRequired().HasDefaultValue(false);
             });
 
             modelBuilder.Entity<UserRoleMapping>(entity =>

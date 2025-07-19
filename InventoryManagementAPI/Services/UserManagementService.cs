@@ -17,7 +17,7 @@ namespace InventoryManagementAPI.Services
 
         public async Task<User?> CreateUserAsync(CreateUserRequestDto request)
         {
-            if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+            if (await _context.Users.AnyAsync(u => u.Email == request.Email && !u.Deleted))
             {
                 return null;
             }
@@ -59,7 +59,7 @@ namespace InventoryManagementAPI.Services
             var user = await _context.Users
                 .Include(u => u.UserRoleMappings)
                 .ThenInclude(urm => urm.Role)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Id == userId && !u.Deleted);
             
             if (user == null)
             {
@@ -93,6 +93,7 @@ namespace InventoryManagementAPI.Services
             var users = await _context.Users
                 .Include(u => u.UserRoleMappings)
                 .ThenInclude(urm => urm.Role)
+                .Where(u => !u.Deleted)
                 .ToListAsync();
 
             return users;
@@ -102,12 +103,12 @@ namespace InventoryManagementAPI.Services
         {
             var user = await _context.Users.FindAsync(userId);
             
-            if (user == null)
+            if (user == null || user.Deleted)
             {
                 return false;
             }
 
-            _context.Users.Remove(user);
+            user.Deleted = true;
             await _context.SaveChangesAsync();
             return true;
         }
