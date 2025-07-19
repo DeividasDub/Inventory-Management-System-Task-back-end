@@ -60,7 +60,7 @@ namespace InventoryManagementAPI.Controllers
             return Ok(model);
         }
 
-        [HttpGet]
+        [HttpGet("users")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManagementService.GetAllUsersAsync();

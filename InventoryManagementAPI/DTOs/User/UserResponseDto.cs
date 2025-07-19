@@ -8,5 +8,6 @@ namespace InventoryManagementAPI.DTOs.User
         public string LastName { get; set; } = string.Empty;
         public List<string> RoleNames { get; set; } = new List<string>();
         public DateTime CreatedOn { get; set; }
+        public bool Deleted { get; set; } = false;
     }
 }
