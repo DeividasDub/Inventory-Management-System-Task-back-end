@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace InventoryManagementAPI.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum StockMovementType
     {
         IN,
