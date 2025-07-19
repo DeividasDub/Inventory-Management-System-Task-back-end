@@ -15,7 +15,9 @@ namespace InventoryManagementAPI.Controllers
         private readonly IStockMovementService _stockMovementService;
         private readonly IStockMovementModelFactory _stockMovementModelFactory;
 
-        public StockMovementController(IStockMovementService stockMovementService, IStockMovementModelFactory stockMovementModelFactory)
+        public StockMovementController(
+            IStockMovementService stockMovementService, 
+            IStockMovementModelFactory stockMovementModelFactory)
         {
             _stockMovementService = stockMovementService;
             _stockMovementModelFactory = stockMovementModelFactory;
@@ -53,7 +55,9 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> GetLastStockMovements(int productId, [FromQuery] int count = 10)
         {
             var stockMovements = await _stockMovementService.GetLastStockMovementsAsync(productId, count);
+
             var model = _stockMovementModelFactory.PrepareStockMovementListResponseModel(stockMovements);
+
             return Ok(model);
         }
     }

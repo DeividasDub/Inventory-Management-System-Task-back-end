@@ -14,7 +14,9 @@ namespace InventoryManagementAPI.Controllers
         private readonly IRoleManagementService _roleManagementService;
         private readonly IRoleModelFactory _roleModelFactory;
 
-        public RoleManagementController(IRoleManagementService roleManagementService, IRoleModelFactory roleModelFactory)
+        public RoleManagementController(
+            IRoleManagementService roleManagementService, 
+            IRoleModelFactory roleModelFactory)
         {
             _roleManagementService = roleManagementService;
             _roleModelFactory = roleModelFactory;
@@ -77,7 +79,9 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> GetAllRoles()
         {
             var roles = await _roleManagementService.GetAllRolesAsync();
+
             var model = _roleModelFactory.PrepareRoleListResponseModel(roles);
+
             return Ok(model);
         }
     }

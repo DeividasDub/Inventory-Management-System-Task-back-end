@@ -14,7 +14,9 @@ namespace InventoryManagementAPI.Controllers
         private readonly IUserManagementService _userManagementService;
         private readonly IUserModelFactory _userModelFactory;
 
-        public UserManagementController(IUserManagementService userManagementService, IUserModelFactory userModelFactory)
+        public UserManagementController(
+            IUserManagementService userManagementService, 
+            IUserModelFactory userModelFactory)
         {
             _userManagementService = userManagementService;
             _userModelFactory = userModelFactory;
@@ -84,7 +86,9 @@ namespace InventoryManagementAPI.Controllers
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userManagementService.GetAllUsersAsync();
+
             var model = _userModelFactory.PrepareUserListResponseModel(users);
+
             return Ok(model);
         }
 

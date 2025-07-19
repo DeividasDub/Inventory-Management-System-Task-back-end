@@ -15,7 +15,9 @@ namespace InventoryManagementAPI.Controllers
         private readonly IProductService _productService;
         private readonly IProductModelFactory _productModelFactory;
 
-        public ProductController(IProductService productService, IProductModelFactory productModelFactory)
+        public ProductController(
+            IProductService productService, 
+            IProductModelFactory productModelFactory)
         {
             _productService = productService;
             _productModelFactory = productModelFactory;
