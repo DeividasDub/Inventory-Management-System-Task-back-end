@@ -68,11 +68,21 @@ namespace InventoryManagementAPI.Data
                     LastName = "User",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!", 12),
                     CreatedOn = DateTime.UtcNow
+                },
+                new User
+                {
+                    Id = 2,
+                    Email = "staff1@inventory.com",
+                    FirstName = "Staff",
+                    LastName = "User",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Staff1", 12),
+                    CreatedOn = DateTime.UtcNow
                 }
             );
 
             modelBuilder.Entity<UserRoleMapping>().HasData(
-                new UserRoleMapping { UserId = 1, RoleId = 1 }
+                new UserRoleMapping { UserId = 1, RoleId = 1 },
+                new UserRoleMapping { UserId = 2, RoleId = 2 }
             );
 
             modelBuilder.Entity<Supplier>(entity =>

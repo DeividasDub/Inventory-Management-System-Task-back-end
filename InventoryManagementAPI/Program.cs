@@ -56,6 +56,7 @@ builder.Services.AddScoped<IRoleManagementService, RoleManagementService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IStockMovementService, StockMovementService>();
+builder.Services.AddScoped<IDatabaseBackupService, DatabaseBackupService>();
 
 builder.Services.AddScoped<IAuthModelFactory, AuthModelFactory>();
 builder.Services.AddScoped<IUserModelFactory, UserModelFactory>();
